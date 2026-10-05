@@ -25,8 +25,28 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use((req, res, next) => {
+  const isApi = req.path.startsWith('/api/');
+  const isHtml = req.path === '/' || req.path.endsWith('.html');
+  const isAsset = /\.(js|css|png|jpe?g|gif|svg|webp|pdf|json)$/i.test(req.path);
+
+  if (isApi || isHtml) {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+  } else if (isAsset) {
+    res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+  }
+
+  next();
+});
+
 // Serve static frontend files
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: 0,
+  etag: false,
+  lastModified: false
+}));
 
 // --- JWT Auth Middleware ---
 const protect = async (req, res, next) => {

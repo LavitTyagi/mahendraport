@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Admin Login - Portfolio</title>
-  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../style.css?v=20261006-1">
   <style>
     body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #0f172a; color: white; }
     .login-card { background: #1e293b; padding: 2rem; border-radius: 8px; width: 300px; text-align: center; }
@@ -26,6 +26,7 @@
       try {
         const res = await fetch('/api/auth/login', {
           method: 'POST',
+          cache: 'no-store',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify({email, password})
         });

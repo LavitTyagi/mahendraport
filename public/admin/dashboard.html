@@ -298,6 +298,7 @@
     const token = localStorage.getItem('adminToken');
     if (!token) window.location.href = '/admin/index.html';
     const API_URL = '/api';
+    const fetchNoCache = (url, options = {}) => fetch(url, { ...options, cache: 'no-store' });
 
     function showToast(msg, isError = false) {
       const t = document.getElementById('toast');
@@ -329,10 +330,10 @@
     // --- Stats ---
     async function loadStats() {
       const [p, e, s, c] = await Promise.all([
-        fetch(`${API_URL}/projects`).then(r => r.json()),
-        fetch(`${API_URL}/experiences`).then(r => r.json()),
-        fetch(`${API_URL}/skills`).then(r => r.json()),
-        fetch(`${API_URL}/certifications`).then(r => r.json())
+        fetchNoCache(`${API_URL}/projects`).then(r => r.json()),
+        fetchNoCache(`${API_URL}/experiences`).then(r => r.json()),
+        fetchNoCache(`${API_URL}/skills`).then(r => r.json()),
+        fetchNoCache(`${API_URL}/certifications`).then(r => r.json())
       ]);
       document.getElementById('stat-projects').textContent = p.length ?? '—';
       document.getElementById('stat-exp').textContent = e.length ?? '—';
@@ -342,7 +343,7 @@
 
     // --- PROFILE ---
     async function loadProfile() {
-      const profile = await fetch(`${API_URL}/profile`).then(r => r.json());
+      const profile = await fetchNoCache(`${API_URL}/profile`).then(r => r.json());
       document.getElementById('pName').value = profile.name || '';
       document.getElementById('pTitle').value = profile.title || '';
       document.getElementById('pEmail').value = profile.email || '';
@@ -378,14 +379,14 @@
         internshipsCount: document.getElementById('pInternships').value,
         problemsSolved: document.getElementById('pProblems').value,
       };
-      const res = await fetch(`${API_URL}/profile`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(payload) });
+      const res = await fetchNoCache(`${API_URL}/profile`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(payload) });
       if (res.ok) showToast('✅ Profile saved!'); else showToast('❌ Failed to save', true);
     }
 
     // --- EXPERIENCE ---
     async function loadExperiences() {
       const list = document.getElementById('expList');
-      const items = await fetch(`${API_URL}/experiences`).then(r => r.json());
+      const items = await fetchNoCache(`${API_URL}/experiences`).then(r => r.json());
       if (!items.length) { list.innerHTML = '<p style="color:#64748b;">No experiences yet.</p>'; return; }
       list.innerHTML = items.map(e => `
         <div class="item-card">
@@ -410,7 +411,7 @@
         technologies: techRaw ? techRaw.split(',').map(s => s.trim()) : []
       };
       if (!payload.company || !payload.position) { showToast('Company and Position are required', true); return; }
-      const res = await fetch(`${API_URL}/experiences`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
+      const res = await fetchNoCache(`${API_URL}/experiences`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
       if (res.ok) {
         showToast('✅ Experience added!');
         document.getElementById('expCompany').value = '';
@@ -426,7 +427,7 @@
     // --- PROJECTS ---
     async function loadProjects() {
       const list = document.getElementById('projectList');
-      const items = await fetch(`${API_URL}/projects`).then(r => r.json());
+      const items = await fetchNoCache(`${API_URL}/projects`).then(r => r.json());
       if (!items.length) { list.innerHTML = '<p style="color:#64748b;">No projects yet.</p>'; return; }
       list.innerHTML = items.map(p => `
         <div class="item-card">
@@ -451,7 +452,7 @@
         technologies: techRaw ? techRaw.split(',').map(s => s.trim()) : []
       };
       if (!payload.title) { showToast('Title is required', true); return; }
-      const res = await fetch(`${API_URL}/projects`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
+      const res = await fetchNoCache(`${API_URL}/projects`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
       if (res.ok) {
         showToast('✅ Project added!');
         ['prTitle','prDesc','prGithub','prLive','prTech'].forEach(id => document.getElementById(id).value = '');
@@ -462,7 +463,7 @@
     // --- SKILLS ---
     async function loadSkills() {
       const list = document.getElementById('skillList');
-      const items = await fetch(`${API_URL}/skills`).then(r => r.json());
+      const items = await fetchNoCache(`${API_URL}/skills`).then(r => r.json());
       if (!items.length) { list.innerHTML = '<p style="color:#64748b;">No skill categories yet.</p>'; return; }
       list.innerHTML = items.map(s => `
         <div class="item-card">
@@ -488,7 +489,7 @@
         skills
       };
       if (!payload.category) { showToast('Category name is required', true); return; }
-      const res = await fetch(`${API_URL}/skills`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
+      const res = await fetchNoCache(`${API_URL}/skills`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
       if (res.ok) {
         showToast('✅ Skill category added!');
         document.getElementById('skillCat').value = '';
@@ -501,7 +502,7 @@
     // --- CERTIFICATIONS ---
     async function loadCertifications() {
       const list = document.getElementById('certList');
-      const items = await fetch(`${API_URL}/certifications`).then(r => r.json());
+      const items = await fetchNoCache(`${API_URL}/certifications`).then(r => r.json());
       if (!items.length) { list.innerHTML = '<p style="color:#64748b;">No certifications yet.</p>'; return; }
       list.innerHTML = items.map(c => `
         <div class="item-card">
@@ -524,7 +525,7 @@
         credentialUrl: document.getElementById('certUrl').value,
       };
       if (!payload.name) { showToast('Certificate name is required', true); return; }
-      const res = await fetch(`${API_URL}/certifications`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
+      const res = await fetchNoCache(`${API_URL}/certifications`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
       if (res.ok) {
         showToast('✅ Certification added!');
         ['certName','certOrg','certDate','certUrl'].forEach(id => document.getElementById(id).value = '');
@@ -534,7 +535,7 @@
 
     // --- CONTACT ---
     async function loadContact() {
-      const profile = await fetch(`${API_URL}/profile`).then(r => r.json());
+      const profile = await fetchNoCache(`${API_URL}/profile`).then(r => r.json());
       document.getElementById('cEmail').value = profile.email || '';
       document.getElementById('cPhone').value = profile.phone || '';
       document.getElementById('cLinkedin').value = profile.linkedin || '';
@@ -550,14 +551,14 @@
         github: document.getElementById('cGithub').value,
         kaggle: document.getElementById('cKaggle').value,
       };
-      const res = await fetch(`${API_URL}/profile`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(payload) });
+      const res = await fetchNoCache(`${API_URL}/profile`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(payload) });
       if (res.ok) showToast('✅ Contact info saved!'); else showToast('❌ Failed to save', true);
     }
 
     // --- Generic Delete ---
     async function deleteItem(resource, id, reloadFn) {
       if (!confirm('Delete this item?')) return;
-      const res = await fetch(`${API_URL}/${resource}/${id}`, { method: 'DELETE', headers: authHeaders() });
+      const res = await fetchNoCache(`${API_URL}/${resource}/${id}`, { method: 'DELETE', headers: authHeaders() });
       if (res.ok) { showToast('✅ Deleted!'); reloadFn(); } else showToast('❌ Failed to delete', true);
     }
 
