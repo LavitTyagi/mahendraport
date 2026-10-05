@@ -21,7 +21,7 @@ const seed = async () => {
     await Experience.deleteMany();
 
     const user = await User.create({ email: 'admin@example.com', password: 'password123' });
-    
+
     await Profile.create({
       name: 'Mahendra Baghel',
       title: 'AI • ML • Data Engineer',

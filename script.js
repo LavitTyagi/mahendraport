@@ -1,6 +1,23 @@
-// ================= SMOOTH SCROLL =================
+// ================= MOBILE NAVBAR MENU =================
+const menuIcon = document.getElementById('menuIcon');
+const navbar = document.getElementById('navbar');
+
+if (menuIcon && navbar) {
+  menuIcon.addEventListener('click', () => {
+    navbar.classList.toggle('active');
+    menuIcon.textContent = navbar.classList.contains('active') ? '✕' : '☰';
+  });
+}
+
+// ================= SMOOTH SCROLL & CLOSE MOBILE MENU =================
 document.querySelectorAll('a').forEach(link => {
   link.addEventListener('click', function(e){
+    // Close mobile menu when a link is clicked
+    if (navbar && navbar.classList.contains('active')) {
+      navbar.classList.remove('active');
+      if (menuIcon) menuIcon.textContent = '☰';
+    }
+
     // Check if link has hash (prevents JS from blocking the PDF download link)
     if(this.hash !== ""){
       e.preventDefault();
@@ -11,6 +28,7 @@ document.querySelectorAll('a').forEach(link => {
     }
   });
 });
+
 
 // ================= PROFILE IMAGE POPUP =================
 const profilePic = document.getElementById("profilePic");
