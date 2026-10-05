@@ -7,9 +7,29 @@ const mongoose = require('mongoose');
 dotenv.config();
 
 // Connect to database
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.error(err));
+const { MongoMemoryServer } = require('mongodb-memory-server');
+const { User } = require('./models');
+
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, { serverSelectionTimeoutMS: 5000 });
+    console.log('MongoDB Connected to remote cluster');
+  } catch (err) {
+    console.error('Remote MongoDB connection failed, falling back to in-memory DB...');
+    const mongoServer = await MongoMemoryServer.create();
+    const uri = mongoServer.getUri();
+    await mongoose.connect(uri);
+    console.log('MongoDB Connected to in-memory server');
+    
+    // Seed admin user in memory DB
+    const adminExists = await User.findOne({ email: 'admin@example.com' });
+    if (!adminExists) {
+      await User.create({ email: 'admin@example.com', password: 'password123' });
+      console.log('Default Admin seeded (admin@example.com / password123)');
+    }
+  }
+};
+connectDB();
 
 const app = express();
 

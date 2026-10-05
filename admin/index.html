@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="../style.css">
   <style>
     body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #0f172a; color: white; }
-    .login-card { background: #1e293b; padding: 2rem; border-radius: 8px; width: 300px; text-align: center; }
+    .login-card { background: #1e293b; padding: 2rem; border-radius: 8px; width: 100%; max-width: 320px; margin: 0 20px; text-align: center; }
     input { width: 100%; padding: 10px; margin: 10px 0; border: none; border-radius: 4px; }
     button { width: 100%; padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; }
   </style>
@@ -32,7 +32,8 @@
         const data = await res.json();
         if (data.token) {
           localStorage.setItem('adminToken', data.token);
-          window.location.href = 'dashboard.html';
+          const path = window.location.pathname;
+          window.location.href = path.endsWith('/admin') ? path + '/dashboard.html' : 'dashboard.html';
         } else {
           document.getElementById('error').innerText = 'Invalid credentials';
         }
