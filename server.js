@@ -10,7 +10,10 @@ dotenv.config();
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('MongoDB Connected'))
+  .then(async () => {
+    console.log('MongoDB Connected');
+    await ensureDefaultAdmin();
+  })
   .catch(err => console.error(err));
 
 // Import Models
@@ -18,6 +21,20 @@ const {
   Certification, Education, Experience,
   Message, Profile, Project, Skill, User
 } = require('./models');
+
+const DEFAULT_ADMIN_EMAIL = 'admin@example.com';
+const DEFAULT_ADMIN_PASSWORD = 'password123';
+
+const ensureDefaultAdmin = async () => {
+  const existingAdmin = await User.findOne({ email: DEFAULT_ADMIN_EMAIL });
+  if (!existingAdmin) {
+    await User.create({
+      email: DEFAULT_ADMIN_EMAIL,
+      password: DEFAULT_ADMIN_PASSWORD
+    });
+    console.log(`Default admin created: ${DEFAULT_ADMIN_EMAIL} / ${DEFAULT_ADMIN_PASSWORD}`);
+  }
+};
 
 const app = express();
 
