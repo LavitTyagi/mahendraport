@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; display: flex; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px; background: #1e293b; height: 100vh; padding: 0;
+      position: fixed; left: 0; top: 0; overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.3); display: flex; flex-direction: column;
+    }
+    .sidebar-header {
+      padding: 24px 20px; border-bottom: 1px solid #334155;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+    }
+    .sidebar-header h2 { font-size: 1.3rem; font-weight: 700; color: white; }
+    .sidebar-header p { font-size: 0.75rem; color: rgba(255,255,255,0.7); margin-top: 2px; }
+    .sidebar-nav { padding: 12px 0; flex: 1; }
+    .nav-label {
+      font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+      color: #64748b; padding: 12px 20px 4px;
+    }
+    .sidebar a {
+      display: flex; align-items: center; gap: 10px; color: #94a3b8;
+      text-decoration: none; padding: 10px 20px; font-size: 0.88rem;
+      transition: all 0.2s; border-left: 3px solid transparent;
+    }
+    .sidebar a:hover, .sidebar a.active {
+      color: #f1f5f9; background: rgba(59,130,246,0.1); border-left-color: #3b82f6;
+    }
+    .sidebar a .icon { font-size: 1rem; width: 20px; text-align: center; }
+    .logout-btn {
+      margin: 12px; padding: 10px !important; background: rgba(239,68,68,0.1) !important;
+      border-radius: 8px; border-left: none !important; color: #f87171 !important;
+      text-align: center; justify-content: center;
+    }
+    .logout-btn:hover { background: rgba(239,68,68,0.2) !important; }
+
+    /* Main content */
+    .content { flex: 1; margin-left: 260px; padding: 28px; min-height: 100vh; }
+    .page-header { margin-bottom: 24px; }
+    .page-header h1 { font-size: 1.6rem; font-weight: 700; color: #f1f5f9; }
+    .page-header p { color: #64748b; font-size: 0.88rem; margin-top: 4px; }
+
+    /* Cards */
+    .card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+      padding: 24px; margin-bottom: 20px;
+    }
+    .card h3 { font-size: 1.05rem; font-weight: 600; color: #f1f5f9; margin-bottom: 16px; border-bottom: 1px solid #334155; padding-bottom: 10px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-grid.full { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 0.78rem; font-weight: 500; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+    .form-group input, .form-group textarea, .form-group select {
+      background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+      padding: 10px 12px; color: #e2e8f0; font-size: 0.9rem; font-family: inherit;
+      transition: border-color 0.2s; outline: none; width: 100%;
+    }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: #3b82f6; }
+    .form-group textarea { min-height: 90px; resize: vertical; }
+
+    /* Buttons */
+    .btn { padding: 9px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; font-family: inherit; transition: all 0.2s; }
+    .btn-primary { background: #3b82f6; color: white; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-danger { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+    .btn-danger:hover { background: rgba(239,68,68,0.25); }
+    .btn-success { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+    .btn-sm { padding: 5px 12px; font-size: 0.78rem; }
+    .btn-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+
+    /* List items */
+    .item-list { display: flex; flex-direction: column; gap: 10px; }
+    .item-card {
+      background: #0f172a; border: 1px solid #334155; border-radius: 8px;
+      padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .item-card-info h4 { font-size: 0.9rem; font-weight: 600; color: #f1f5f9; }
+    .item-card-info p { font-size: 0.78rem; color: #64748b; margin-top: 2px; }
+    .item-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; background: #22c55e; color: white;
+      padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 0.85rem;
+      opacity: 0; transform: translateY(20px); transition: all 0.3s; z-index: 1000;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.error { background: #ef4444; }
+
+    /* Welcome */
+    .welcome-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .stat-box {
+      background: #1e293b; border: 1px solid #334155; border-radius: 12px;
+      padding: 20px; text-align: center;
+    }
+    .stat-box .num { font-size: 2rem; font-weight: 700; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .stat-box .lbl { font-size: 0.8rem; color: #64748b; margin-top: 4px; }
+
+    .section-hidden { display: none; }
+    .skills-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .skill-tag { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.3); padding: 4px 10px; border-radius: 20px; font-size: 0.78rem; }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <h2>⚡ Admin Panel</h2>
+      <p>Portfolio Management</p>
+    </div>
+    <div class="sidebar-nav">
+      <div class="nav-label">Content</div>
+      <a href="#" onclick="showSection('home')" id="nav-home" class="active"><span class="icon">🏠</span> Dashboard</a>
+      <a href="#" onclick="showSection('about')" id="nav-about"><span class="icon">👤</span> About / Profile</a>
+      <a href="#" onclick="showSection('experience')" id="nav-experience"><span class="icon">💼</span> Experience</a>
+      <a href="#" onclick="showSection('projects')" id="nav-projects"><span class="icon">📁</span> Projects</a>
+      <a href="#" onclick="showSection('skills')" id="nav-skills"><span class="icon">⚡</span> Skills</a>
+      <a href="#" onclick="showSection('certifications')" id="nav-certifications"><span class="icon">🏆</span> Certifications</a>
+      <a href="#" onclick="showSection('contact')" id="nav-contact"><span class="icon">📬</span> Contact Info</a>
+      <div class="nav-label">Account</div>
+      <a href="#" onclick="logout()" class="logout-btn"><span class="icon">🚪</span> Logout</a>
+    </div>
+  </div>
+
+  <div class="content" id="mainContent">
+    <!-- HOME -->
+    <div id="section-home">
+      <div class="page-header">
+        <h1>Welcome back! 👋</h1>
+        <p>Manage all your portfolio content from here.</p>
+      </div>
+      <div class="welcome-grid">
+        <div class="stat-box"><div class="num" id="stat-projects">—</div><div class="lbl">Projects</div></div>
+        <div class="stat-box"><div class="num" id="stat-exp">—</div><div class="lbl">Experiences</div></div>
+        <div class="stat-box"><div class="num" id="stat-skills">—</div><div class="lbl">Skill Categories</div></div>
+        <div class="stat-box"><div class="num" id="stat-certs">—</div><div class="lbl">Certifications</div></div>
+      </div>
+      <div class="card">
+        <h3>Quick Links</h3>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px;">
+          <button class="btn btn-primary" onclick="showSection('about')">✏️ Edit Profile</button>
+          <button class="btn btn-primary" onclick="showSection('experience')">➕ Add Experience</button>
+          <button class="btn btn-primary" onclick="showSection('projects')">📁 Manage Projects</button>
+          <button class="btn btn-primary" onclick="showSection('skills')">⚡ Manage Skills</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div id="section-about" class="section-hidden">
+      <div class="page-header"><h1>About / Profile</h1><p>Edit your personal information and stats.</p></div>
+      <div class="card">
+        <h3>Basic Info</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Full Name</label><input id="pName" placeholder="Mahendra Baghel"></div>
+          <div class="form-group"><label>Title / Role</label><input id="pTitle" placeholder="AI • ML • Data Engineer"></div>
+          <div class="form-group"><label>Email</label><input id="pEmail" placeholder="you@example.com"></div>
+          <div class="form-group"><label>Phone</label><input id="pPhone" placeholder="+91 ..."></div>
+          <div class="form-group"><label>LinkedIn URL</label><input id="pLinkedin" placeholder="https://linkedin.com/in/..."></div>
+          <div class="form-group"><label>GitHub URL</label><input id="pGithub" placeholder="https://github.com/..."></div>
+          <div class="form-group"><label>Kaggle URL</label><input id="pKaggle" placeholder="https://kaggle.com/..."></div>
+        </div>
+        <div class="form-group" style="margin-top:14px;"><label>Description (Hero section text)</label><textarea id="pDesc" placeholder="Short bio shown in hero section..."></textarea></div>
+        <div class="form-group" style="margin-top:14px;"><label>About Me — Paragraph 1</label><textarea id="pAbout1" placeholder="I'm a Computer Science Engineering student..."></textarea></div>
+        <div class="form-group" style="margin-top:8px;"><label>About Me — Paragraph 2</label><textarea id="pAbout2" placeholder="I have worked with Google for Developers..."></textarea></div>
+        <div class="btn-actions"><button class="btn btn-primary" onclick="saveProfile()">💾 Save Profile</button></div>
+      </div>
+      <div class="card">
+        <h3>Stats</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>CGPA</label><input id="pCgpa" placeholder="8.2"></div>
+          <div class="form-group"><label>Projects Count</label><input id="pProjects" placeholder="4+"></div>
+          <div class="form-group"><label>Internships Count</label><input id="pInternships" placeholder="3+"></div>
+          <div class="form-group"><label>Problems Solved</label><input id="pProblems" placeholder="30+"></div>
+        </div>
+        <div class="btn-actions"><button class="btn btn-primary" onclick="saveProfile()">💾 Save Stats</button></div>
+      </div>
+    </div>
+
+    <!-- EXPERIENCE -->
+    <div id="section-experience" class="section-hidden">
+      <div class="page-header"><h1>Experience</h1><p>Add or remove work experience and internships.</p></div>
+      <div class="card">
+        <h3>Add New Experience</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Company</label><input id="expCompany" placeholder="Google for Developers"></div>
+          <div class="form-group"><label>Position</label><input id="expPosition" placeholder="AI/ML Intern"></div>
+          <div class="form-group"><label>Start Date</label><input id="expStart" placeholder="Jul 2024"></div>
+          <div class="form-group"><label>End Date</label><input id="expEnd" placeholder="Sep 2024 (or Present)"></div>
+        </div>
+        <div class="form-group" style="margin-top:14px;"><label>Description</label><textarea id="expDesc" placeholder="Brief description..."></textarea></div>
+        <div class="form-group" style="margin-top:14px;"><label>Technologies (comma separated)</label><input id="expTech" placeholder="Python, TensorFlow, Scikit-Learn"></div>
+        <div class="btn-actions"><button class="btn btn-primary" onclick="addExperience()">➕ Add Experience</button></div>
+      </div>
+      <div class="card">
+        <h3>Existing Experiences</h3>
+        <div class="item-list" id="expList"><p style="color:#64748b;">Loading...</p></div>
+      </div>
+    </div>
+
+    <!-- PROJECTS -->
+    <div id="section-projects" class="section-hidden">
+      <div class="page-header"><h1>Projects</h1><p>Add or remove portfolio projects.</p></div>
+      <div class="card">
+        <h3>Add New Project</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Project Title</label><input id="prTitle" placeholder="Real-Time Emotion Detection"></div>
+          <div class="form-group"><label>Category</label>
+            <select id="prCat">
+              <option value="ml">Machine Learning</option>
+              <option value="dl">Deep Learning</option>
+              <option value="nlp">NLP</option>
+              <option value="automation">Automation</option>
+              <option value="web">Web Development</option>
+            </select>
+          </div>
+          <div class="form-group"><label>GitHub URL</label><input id="prGithub" placeholder="https://github.com/..."></div>
+          <div class="form-group"><label>Live URL</label><input id="prLive" placeholder="https://..."></div>
+        </div>
+        <div class="form-group" style="margin-top:14px;"><label>Description</label><textarea id="prDesc" placeholder="What does this project do?"></textarea></div>
+        <div class="form-group" style="margin-top:14px;"><label>Technologies (comma separated)</label><input id="prTech" placeholder="Python, TensorFlow, OpenCV"></div>
+        <div class="btn-actions"><button class="btn btn-primary" onclick="addProject()">➕ Add Project</button></div>
+      </div>
+      <div class="card">
+        <h3>Existing Projects</h3>
+        <div class="item-list" id="projectList"><p style="color:#64748b;">Loading...</p></div>
+      </div>
+    </div>
+
+    <!-- SKILLS -->
+    <div id="section-skills" class="section-hidden">
+      <div class="page-header"><h1>Skills</h1><p>Manage skill categories and individual skills.</p></div>
+      <div class="card">
+        <h3>Add Skill Category</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Category Name</label><input id="skillCat" placeholder="AI & Machine Learning"></div>
+          <div class="form-group"><label>Order (optional)</label><input id="skillOrder" type="number" placeholder="1"></div>
+        </div>
+        <div class="form-group" style="margin-top:14px;">
+          <label>Skills (format: Name:Percentage, comma separated)</label>
+          <input id="skillItems" placeholder="Python:92, TensorFlow:80, OpenCV:85">
+        </div>
+        <div class="btn-actions"><button class="btn btn-primary" onclick="addSkillCategory()">➕ Add Category</button></div>
+      </div>
+      <div class="card">
+        <h3>Existing Skill Categories</h3>
+        <div class="item-list" id="skillList"><p style="color:#64748b;">Loading...</p></div>
+      </div>
+    </div>
+
+    <!-- CERTIFICATIONS -->
+    <div id="section-certifications" class="section-hidden">
+      <div class="page-header"><h1>Certifications</h1><p>Add or remove certifications and certificates.</p></div>
+      <div class="card">
+        <h3>Add Certification</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Certificate Name</label><input id="certName" placeholder="Azure Fundamentals (AZ-900)"></div>
+          <div class="form-group"><label>Issuing Organization</label><input id="certOrg" placeholder="Microsoft"></div>
+          <div class="form-group"><label>Issue Date</label><input id="certDate" placeholder="Sep 2023"></div>
+          <div class="form-group"><label>Credential URL</label><input id="certUrl" placeholder="https://..."></div>
+        </div>
+        <div class="btn-actions"><button class="btn btn-primary" onclick="addCertification()">➕ Add Certification</button></div>
+      </div>
+      <div class="card">
+        <h3>Existing Certifications</h3>
+        <div class="item-list" id="certList"><p style="color:#64748b;">Loading...</p></div>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div id="section-contact" class="section-hidden">
+      <div class="page-header"><h1>Contact Info</h1><p>Update your public contact information and social links.</p></div>
+      <div class="card">
+        <h3>Contact Details</h3>
+        <div class="form-grid">
+          <div class="form-group"><label>Email</label><input id="cEmail" placeholder="you@example.com"></div>
+          <div class="form-group"><label>Phone</label><input id="cPhone" placeholder="+91 ..."></div>
+          <div class="form-group"><label>LinkedIn URL</label><input id="cLinkedin" placeholder="https://linkedin.com/in/..."></div>
+          <div class="form-group"><label>GitHub URL</label><input id="cGithub" placeholder="https://github.com/..."></div>
+          <div class="form-group"><label>Kaggle URL</label><input id="cKaggle" placeholder="https://kaggle.com/..."></div>
+        </div>
+        <div class="btn-actions"><button class="btn btn-primary" onclick="saveContact()">💾 Save Contact Info</button></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const token = localStorage.getItem('adminToken');
+    if (!token) window.location.href = 'index.html';
+    const API_URL = 'http://localhost:5000/api';
+
+    function showToast(msg, isError = false) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast' + (isError ? ' error' : '') + ' show';
+      setTimeout(() => t.className = 'toast', 3000);
+    }
+
+    function authHeaders() {
+      return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` };
+    }
+
+    function showSection(name) {
+      document.querySelectorAll('[id^="section-"]').forEach(el => el.classList.add('section-hidden'));
+      document.querySelectorAll('.sidebar a').forEach(el => el.classList.remove('active'));
+      document.getElementById('section-' + name).classList.remove('section-hidden');
+      const navEl = document.getElementById('nav-' + name);
+      if (navEl) navEl.classList.add('active');
+
+      if (name === 'about') loadProfile();
+      if (name === 'experience') loadExperiences();
+      if (name === 'projects') loadProjects();
+      if (name === 'skills') loadSkills();
+      if (name === 'certifications') loadCertifications();
+      if (name === 'contact') loadContact();
+      if (name === 'home') loadStats();
+    }
+
+    // --- Stats ---
+    async function loadStats() {
+      const [p, e, s, c] = await Promise.all([
+        fetch(`${API_URL}/projects`).then(r => r.json()),
+        fetch(`${API_URL}/experiences`).then(r => r.json()),
+        fetch(`${API_URL}/skills`).then(r => r.json()),
+        fetch(`${API_URL}/certifications`).then(r => r.json())
+      ]);
+      document.getElementById('stat-projects').textContent = p.length ?? '—';
+      document.getElementById('stat-exp').textContent = e.length ?? '—';
+      document.getElementById('stat-skills').textContent = s.length ?? '—';
+      document.getElementById('stat-certs').textContent = c.length ?? '—';
+    }
+
+    // --- PROFILE ---
+    async function loadProfile() {
+      const profile = await fetch(`${API_URL}/profile`).then(r => r.json());
+      document.getElementById('pName').value = profile.name || '';
+      document.getElementById('pTitle').value = profile.title || '';
+      document.getElementById('pEmail').value = profile.email || '';
+      document.getElementById('pPhone').value = profile.phone || '';
+      document.getElementById('pLinkedin').value = profile.linkedin || '';
+      document.getElementById('pGithub').value = profile.github || '';
+      document.getElementById('pKaggle').value = profile.kaggle || '';
+    document.getElementById('pDesc').value = profile.description || '';
+      document.getElementById('pAbout1').value = (profile.aboutText && profile.aboutText[0]) || '';
+      document.getElementById('pAbout2').value = (profile.aboutText && profile.aboutText[1]) || '';
+      document.getElementById('pCgpa').value = profile.cgpa || '';
+      document.getElementById('pProjects').value = profile.projectsCount || '';
+      document.getElementById('pInternships').value = profile.internshipsCount || '';
+      document.getElementById('pProblems').value = profile.problemsSolved || '';
+    }
+
+    async function saveProfile() {
+      const payload = {
+        name: document.getElementById('pName').value,
+        title: document.getElementById('pTitle').value,
+        email: document.getElementById('pEmail').value,
+        phone: document.getElementById('pPhone').value,
+        linkedin: document.getElementById('pLinkedin').value,
+        github: document.getElementById('pGithub').value,
+        kaggle: document.getElementById('pKaggle').value,
+        description: document.getElementById('pDesc').value,
+        aboutText: [
+          document.getElementById('pAbout1').value,
+          document.getElementById('pAbout2').value
+        ].filter(t => t.trim()),
+        cgpa: document.getElementById('pCgpa').value,
+        projectsCount: document.getElementById('pProjects').value,
+        internshipsCount: document.getElementById('pInternships').value,
+        problemsSolved: document.getElementById('pProblems').value,
+      };
+      const res = await fetch(`${API_URL}/profile`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(payload) });
+      if (res.ok) showToast('✅ Profile saved!'); else showToast('❌ Failed to save', true);
+    }
+
+    // --- EXPERIENCE ---
+    async function loadExperiences() {
+      const list = document.getElementById('expList');
+      const items = await fetch(`${API_URL}/experiences`).then(r => r.json());
+      if (!items.length) { list.innerHTML = '<p style="color:#64748b;">No experiences yet.</p>'; return; }
+      list.innerHTML = items.map(e => `
+        <div class="item-card">
+          <div class="item-card-info">
+            <h4>${e.company} — ${e.position}</h4>
+            <p>${e.startDate || ''} ${e.endDate ? '→ ' + e.endDate : ''}</p>
+          </div>
+          <div class="item-actions">
+            <button class="btn btn-danger btn-sm" onclick="deleteItem('experiences','${e._id}', loadExperiences)">🗑 Delete</button>
+          </div>
+        </div>`).join('');
+    }
+
+    async function addExperience() {
+      const techRaw = document.getElementById('expTech').value;
+      const payload = {
+        company: document.getElementById('expCompany').value,
+        position: document.getElementById('expPosition').value,
+        startDate: document.getElementById('expStart').value,
+        endDate: document.getElementById('expEnd').value,
+        description: document.getElementById('expDesc').value,
+        technologies: techRaw ? techRaw.split(',').map(s => s.trim()) : []
+      };
+      if (!payload.company || !payload.position) { showToast('Company and Position are required', true); return; }
+      const res = await fetch(`${API_URL}/experiences`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
+      if (res.ok) {
+        showToast('✅ Experience added!');
+        document.getElementById('expCompany').value = '';
+        document.getElementById('expPosition').value = '';
+        document.getElementById('expStart').value = '';
+        document.getElementById('expEnd').value = '';
+        document.getElementById('expDesc').value = '';
+        document.getElementById('expTech').value = '';
+        loadExperiences();
+      } else showToast('❌ Failed to add', true);
+    }
+
+    // --- PROJECTS ---
+    async function loadProjects() {
+      const list = document.getElementById('projectList');
+      const items = await fetch(`${API_URL}/projects`).then(r => r.json());
+      if (!items.length) { list.innerHTML = '<p style="color:#64748b;">No projects yet.</p>'; return; }
+      list.innerHTML = items.map(p => `
+        <div class="item-card">
+          <div class="item-card-info">
+            <h4>${p.title}</h4>
+            <p>${p.category} ${p.technologies?.length ? '• ' + p.technologies.join(', ') : ''}</p>
+          </div>
+          <div class="item-actions">
+            <button class="btn btn-danger btn-sm" onclick="deleteItem('projects','${p._id}', loadProjects)">🗑 Delete</button>
+          </div>
+        </div>`).join('');
+    }
+
+    async function addProject() {
+      const techRaw = document.getElementById('prTech').value;
+      const payload = {
+        title: document.getElementById('prTitle').value,
+        category: document.getElementById('prCat').value,
+        description: document.getElementById('prDesc').value,
+        githubUrl: document.getElementById('prGithub').value,
+        liveUrl: document.getElementById('prLive').value,
+        technologies: techRaw ? techRaw.split(',').map(s => s.trim()) : []
+      };
+      if (!payload.title) { showToast('Title is required', true); return; }
+      const res = await fetch(`${API_URL}/projects`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
+      if (res.ok) {
+        showToast('✅ Project added!');
+        ['prTitle','prDesc','prGithub','prLive','prTech'].forEach(id => document.getElementById(id).value = '');
+        loadProjects();
+      } else showToast('❌ Failed to add', true);
+    }
+
+    // --- SKILLS ---
+    async function loadSkills() {
+      const list = document.getElementById('skillList');
+      const items = await fetch(`${API_URL}/skills`).then(r => r.json());
+      if (!items.length) { list.innerHTML = '<p style="color:#64748b;">No skill categories yet.</p>'; return; }
+      list.innerHTML = items.map(s => `
+        <div class="item-card">
+          <div class="item-card-info">
+            <h4>${s.category}</h4>
+            <div class="skills-tags">${(s.skills||[]).map(sk => `<span class="skill-tag">${sk.name} ${sk.percentage}%</span>`).join('')}</div>
+          </div>
+          <div class="item-actions">
+            <button class="btn btn-danger btn-sm" onclick="deleteItem('skills','${s._id}', loadSkills)">🗑 Delete</button>
+          </div>
+        </div>`).join('');
+    }
+
+    async function addSkillCategory() {
+      const skillsRaw = document.getElementById('skillItems').value;
+      const skills = skillsRaw ? skillsRaw.split(',').map(s => {
+        const parts = s.trim().split(':');
+        return { name: parts[0]?.trim(), percentage: parseInt(parts[1]?.trim()) || 0 };
+      }) : [];
+      const payload = {
+        category: document.getElementById('skillCat').value,
+        order: parseInt(document.getElementById('skillOrder').value) || 0,
+        skills
+      };
+      if (!payload.category) { showToast('Category name is required', true); return; }
+      const res = await fetch(`${API_URL}/skills`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
+      if (res.ok) {
+        showToast('✅ Skill category added!');
+        document.getElementById('skillCat').value = '';
+        document.getElementById('skillItems').value = '';
+        document.getElementById('skillOrder').value = '';
+        loadSkills();
+      } else showToast('❌ Failed to add', true);
+    }
+
+    // --- CERTIFICATIONS ---
+    async function loadCertifications() {
+      const list = document.getElementById('certList');
+      const items = await fetch(`${API_URL}/certifications`).then(r => r.json());
+      if (!items.length) { list.innerHTML = '<p style="color:#64748b;">No certifications yet.</p>'; return; }
+      list.innerHTML = items.map(c => `
+        <div class="item-card">
+          <div class="item-card-info">
+            <h4>${c.name}</h4>
+            <p>${c.organization || ''} ${c.issueDate ? '• ' + c.issueDate : ''}</p>
+          </div>
+          <div class="item-actions">
+            ${c.credentialUrl ? `<a href="${c.credentialUrl}" target="_blank" class="btn btn-success btn-sm">🔗 View</a>` : ''}
+            <button class="btn btn-danger btn-sm" onclick="deleteItem('certifications','${c._id}', loadCertifications)">🗑 Delete</button>
+          </div>
+        </div>`).join('');
+    }
+
+    async function addCertification() {
+      const payload = {
+        name: document.getElementById('certName').value,
+        organization: document.getElementById('certOrg').value,
+        issueDate: document.getElementById('certDate').value,
+        credentialUrl: document.getElementById('certUrl').value,
+      };
+      if (!payload.name) { showToast('Certificate name is required', true); return; }
+      const res = await fetch(`${API_URL}/certifications`, { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) });
+      if (res.ok) {
+        showToast('✅ Certification added!');
+        ['certName','certOrg','certDate','certUrl'].forEach(id => document.getElementById(id).value = '');
+        loadCertifications();
+      } else showToast('❌ Failed to add', true);
+    }
+
+    // --- CONTACT ---
+    async function loadContact() {
+      const profile = await fetch(`${API_URL}/profile`).then(r => r.json());
+      document.getElementById('cEmail').value = profile.email || '';
+      document.getElementById('cPhone').value = profile.phone || '';
+      document.getElementById('cLinkedin').value = profile.linkedin || '';
+      document.getElementById('cGithub').value = profile.github || '';
+      document.getElementById('cKaggle').value = profile.kaggle || '';
+    }
+
+    async function saveContact() {
+      const payload = {
+        email: document.getElementById('cEmail').value,
+        phone: document.getElementById('cPhone').value,
+        linkedin: document.getElementById('cLinkedin').value,
+        github: document.getElementById('cGithub').value,
+        kaggle: document.getElementById('cKaggle').value,
+      };
+      const res = await fetch(`${API_URL}/profile`, { method: 'PUT', headers: authHeaders(), body: JSON.stringify(payload) });
+      if (res.ok) showToast('✅ Contact info saved!'); else showToast('❌ Failed to save', true);
+    }
+
+    // --- Generic Delete ---
+    async function deleteItem(resource, id, reloadFn) {
+      if (!confirm('Delete this item?')) return;
+      const res = await fetch(`${API_URL}/${resource}/${id}`, { method: 'DELETE', headers: authHeaders() });
+      if (res.ok) { showToast('✅ Deleted!'); reloadFn(); } else showToast('❌ Failed to delete', true);
+    }
+
+    function logout() {
+      localStorage.removeItem('adminToken');
+      window.location.href = 'index.html';
+    }
+
+    // Load stats on startup
+    loadStats();
+  </script>
+</body>
+</html>

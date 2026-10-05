@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <title>Mahendra Baghel | Portfolio</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Ambient Glowing Blobs -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <header class="navbar">
+    <div class="logo">MB.</div>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact">Contact</a>
+      <a href="assets/Mahendra_Baghel_Resume.pdf" download class="nav-resume-btn">Resume</a>
+      <a href="admin/index.html" style="font-weight: 600; color: #3b82f6;">Admin</a>
+      <button id="themeToggle" class="theme-toggle-btn">🌓</button>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-text">
+      <p class="tag">AI • ML • Data Engineer</p>
+      <h1>
+        Mahendra <br>
+        <span>Baghel</span>
+      </h1>
+      <p class="desc">
+        Final-year Computer Science Engineering student specializing
+        in Artificial Intelligence, Machine Learning, Deep Learning
+        and Data Analytics.
+      </p>
+
+      <div class="buttons">
+        <a href="assets/Mahendra_Baghel_Resume.pdf" download class="btn primary">
+          Download Resume
+        </a>
+        <a href="#projects" class="btn secondary">
+          View Projects
+        </a>
+        <a href="#contact" class="btn secondary">
+          Contact Me
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-card">
+      <div class="profile-image">
+        <img id="profilePic" src="assets/profile.jpeg" alt="Mahendra Baghel">
+      </div>
+      <h2 class="hero-card-title">I'm a <span id="typed-text"></span><span class="cursor">&nbsp;</span></h2>
+      <p>Python • TensorFlow • OpenCV • NLP • Data Analytics</p>
+    </div>
+  </section>
+
+  <section id="about" class="section">
+    <h2 class="section-title">About Me</h2>
+    <div class="about-grid">
+      <div class="about-text" id="aboutText">
+        <p>Loading...</p>
+      </div>
+      <div class="stats" id="aboutStats">
+        <div class="stat-card"><h3 id="statCgpa">—</h3><p>CGPA</p></div>
+        <div class="stat-card"><h3 id="statProjects">—</h3><p>Projects</p></div>
+        <div class="stat-card"><h3 id="statInternships">—</h3><p>Internships</p></div>
+        <div class="stat-card"><h3 id="statProblems">—</h3><p>Problems Solved</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience" class="section">
+    <h2 class="section-title">Experience</h2>
+    <div class="experience-container" id="experienceContainer">
+      <p style="color:#999;">Loading experiences...</p>
+    </div>
+  </section>
+
+  <section id="projects" class="section">
+    <h2 class="section-title">Projects</h2>
+    
+    <div class="project-filters">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="ml">Machine Learning</button>
+      <button class="filter-btn" data-filter="dl">Deep Learning</button>
+      <button class="filter-btn" data-filter="nlp">NLP</button>
+      <button class="filter-btn" data-filter="automation">Automation</button>
+      <button class="filter-btn" data-filter="web">Web Development</button>
+    </div>
+
+    <div class="project-grid" id="projectGrid">
+      <div class="project-card" data-category="dl">
+        <h3>Real-Time Emotion Detection</h3>
+        <p>Identifies facial emotions in real-time  detect  emotions: Angry, Happy, Neutral, Sad, and Surprise.</p>
+        <span>Python • TensorFlow • OpenCV • CNN</span>
+      </div>
+      <div class="project-card" data-category="dl">
+        <h3>Sign Language Translator</h3>
+        <p>Real-time sign language translation using OpenCV and Deep Learning.</p>
+        <span>Python • CNN • LSTM • OpenCV</span>
+      </div>
+      <div class="project-card" data-category="nlp">
+        <h3>Sentiment Analysis</h3>
+        <p>NLP project using BERT and transformers for text analysis.</p>
+        <span>Python • BERT • NLP</span>
+      </div>
+      <div class="project-card" data-category="ml">
+        <h3>Heart Disease Prediction</h3>
+        <p>Machine learning classification model for disease prediction.</p>
+        <span>Scikit-Learn • Pandas</span>
+      </div>
+      <div class="project-card" data-category="automation">
+        <h3>Intelligent RPA Bot</h3>
+        <p>Automated routine ETL workflows and reporting processes using Alteryx & BluePrism.</p>
+        <span>BluePrism • Alteryx • RPA</span>
+      </div>
+      <div class="project-card" data-category="web">
+        <h3>My Portfolio</h3>
+        <p>Personal portfolio website built to showcase projects, experience, skills, and background details.</p>
+        <span>HTML • CSS • JS</span>
+        <div class="project-link-container">
+          <a href="https://mahendra-portfolio9.netlify.app//" target="_blank" class="project-link">
+            Live Website
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills" class="section">
+    <h2 class="section-title">Skills</h2>
+    <div class="skills-grid" id="skillsGrid">
+      <p style="color:#999;">Loading skills...</p>
+    </div>
+  </section>
+
+  <section id="contact" class="section contact">
+    <h2 class="section-title">Contact Me</h2>
+    <div class="contact-container">
+      <div class="contact-info" style="width:100%; text-align:center;" id="contactInfo">
+        <p class="contact-email-text">Direct Email: <a id="contactEmailLink" href="mailto:msb10102005@gmail.com">msb10102005@gmail.com</a></p>
+        <div class="contact-links" id="contactLinks">
+          <a id="contactLinkedin" href="https://www.linkedin.com/in/mahendra-baghel-665989249/" target="_blank">LinkedIn</a>
+          <a id="contactGithub" href="https://github.com/mahendra7828" target="_blank">GitHub</a>
+          <a id="contactKaggle" href="https://www.kaggle.com/mahendrabaghel07" target="_blank">Kaggle</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    © 2026 Mahendra Baghel | AI/ML Portfolio
+  </footer>
+
+  <div class="image-popup" id="imagePopup">
+    <span class="close-btn" id="closeBtn">&times;</span>
+    <img src="assets/profile.jpeg" alt="Profile Full Image" id="popupImg">
+  </div>
+
+  <!-- Floating AI Chatbot -->
+  <div class="chatbot-wrapper">
+    <button class="chatbot-toggle-btn" id="chatbotToggle">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chat-icon"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+      <span class="chatbot-badge">AI</span>
+    </button>
+    
+    <div class="chatbot-container" id="chatbotContainer">
+      <div class="chatbot-header">
+        <div class="chatbot-avatar">MB</div>
+        <div class="chatbot-header-info">
+          <h4>Mahendra's AI</h4>
+          <p>Online • AI Assistant</p>
+        </div>
+        <button class="chatbot-close-btn" id="chatbotClose">&times;</button>
+      </div>
+      
+      <div class="chatbot-messages" id="chatbotMessages">
+        <div class="chat-message bot">
+          <p>Hi there! I am Mahendra's AI assistant. Ask me anything about his projects, experience, education, or skills! 🤖</p>
+        </div>
+      </div>
+
+      <div class="chatbot-suggestions">
+        <button class="suggest-btn" data-query="What projects has he built?">Projects 📁</button>
+        <button class="suggest-btn" data-query="What are his core skills?">Skills ⚡</button>
+        <button class="suggest-btn" data-query="Tell me about his internships.">Experience 💼</button>
+      </div>
+      
+      <form class="chatbot-input-area" id="chatbotForm">
+        <input type="text" id="chatbotInput" placeholder="Ask a question..." required>
+        <button type="submit" class="chatbot-send-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
